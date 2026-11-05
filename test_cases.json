@@ -1,0 +1,137 @@
+[
+  {
+    "id": "supported_survey_size_01",
+    "type": "supported",
+    "question": "How many people took part in the survey about the economics of AI?",
+    "expected_keywords": ["81,000", "Claude"],
+    "expected_behavior": "Answer that the report describes a survey of 81,000 Claude users, and cite the report passage when citations are available.",
+    "why_it_matters": "Checks direct retrieval and faithful extraction of a central, verifiable fact.",
+    "notes": "Source: Economics of AI Jobs - April 2026.pdf, opening and key-findings pages."
+  },
+  {
+    "id": "supported_paraphrase_early_career_01",
+    "type": "supported",
+    "question": "Do newer workers seem more worried that AI could displace their jobs?",
+    "expected_keywords": ["early-career", "job displacement"],
+    "expected_behavior": "Explain that early-career respondents were more likely than senior workers to express concern about job displacement.",
+    "why_it_matters": "Tests whether retrieval handles a paraphrase rather than requiring the report's exact wording.",
+    "notes": "Source: Economics of AI Jobs - April 2026.pdf, page 4. Verify the answer against the source before scoring."
+  },
+  {
+    "id": "supported_productivity_groups_01",
+    "type": "supported",
+    "question": "Which occupational groups reported the strongest productivity improvements from AI?",
+    "expected_keywords": ["management", "computer and math", "productivity"],
+    "expected_behavior": "Report that management was at the top and computer and math was the next-highest group in the report's comparison; do not claim this applies to every worker.",
+    "why_it_matters": "Checks retrieval and synthesis of a comparative finding without overstating what a survey establishes.",
+    "notes": "Source: Economics of AI Jobs - April 2026.pdf, page 7."
+  },
+  {
+    "id": "ambiguous_broad_impact_01",
+    "type": "ambiguous",
+    "question": "Is AI good for workers?",
+    "expected_keywords": [],
+    "expected_behavior": "Avoid a universal yes-or-no claim. Clarify what outcome the user means or give a qualified summary distinguishing reported productivity gains from job-displacement concerns.",
+    "why_it_matters": "Tests whether the chatbot recognizes a broad value judgment and presents mixed evidence with appropriate limits.",
+    "notes": "The cited survey is of Claude users; do not generalize it to all workers without qualification."
+  },
+  {
+    "id": "ambiguous_largest_gains_01",
+    "type": "ambiguous",
+    "question": "What were the biggest gains?",
+    "expected_keywords": [],
+    "expected_behavior": "Ask what kind of gains the user means, or state a clear interpretation and label it; do not silently conflate productivity gain types with occupational groups.",
+    "why_it_matters": "Checks handling of missing context and whether retrieval ambiguity leads to an unsupported answer.",
+    "notes": "The report discusses different dimensions of productivity gains as well as differences by occupation."
+  },
+  {
+    "id": "ambiguous_context_free_followup_01",
+    "type": "ambiguous",
+    "question": "What about the second group?",
+    "expected_keywords": [],
+    "expected_behavior": "Ask which groups the user means because this standalone interface has no prior-turn context; do not guess a comparison from retrieved text.",
+    "why_it_matters": "Tests whether an apparently conversational follow-up is recognized as underspecified when no conversation history is available.",
+    "notes": "The app currently sends each chat input to retrieval as a standalone question."
+  },
+  {
+    "id": "unsupported_salary_01",
+    "type": "unsupported",
+    "question": "What was the average annual salary of software engineers in the survey?",
+    "expected_keywords": [],
+    "expected_behavior": "Say that the available report passages do not provide this salary figure; do not invent a number.",
+    "why_it_matters": "Tests abstention when a question is related to the topic but asks for a specific fact not established by the cited survey findings.",
+    "notes": "Confirm that no other corpus PDF supplies this exact statistic before treating the case as a strict negative."
+  },
+  {
+    "id": "unsupported_personal_prediction_01",
+    "type": "unsupported",
+    "question": "Based on these reports, what is the exact probability that I will lose my job to AI next year?",
+    "expected_keywords": [],
+    "expected_behavior": "State that the reports cannot determine an individual's exact future risk; distinguish survey concerns from a personal prediction.",
+    "why_it_matters": "Checks that aggregate evidence is not misrepresented as a precise individual forecast.",
+    "notes": "A cautious explanation may summarize relevant survey findings, but must not assign a probability."
+  },
+  {
+    "id": "boundary_empty_question_01",
+    "type": "boundary",
+    "question": "   ",
+    "expected_keywords": [],
+    "expected_behavior": "Reject the blank input with a clear validation error; do not call retrieval or generate an answer.",
+    "why_it_matters": "Checks the lower input boundary; the current test adapter is expected to raise ValueError for whitespace-only questions.",
+    "notes": "Exercise through test_adapter.retrieve or ask_chatbot and assert the documented ValueError."
+  },
+  {
+    "id": "boundary_punctuation_only_01",
+    "type": "boundary",
+    "question": "?! ...",
+    "expected_keywords": [],
+    "expected_behavior": "Handle the input without an exception and report that no relevant passage was found, or reject it as having no usable question text; do not fabricate an answer.",
+    "why_it_matters": "Checks tokenization and input handling for non-empty strings that contain no searchable terms.",
+    "notes": "Verify behavior with the installed scikit-learn version; the current UI has no explicit punctuation-only validation."
+  },
+  {
+    "id": "boundary_multi_fact_01",
+    "type": "boundary",
+    "question": "How many users were surveyed, and which career stage was more likely to express concern about AI-related job displacement?",
+    "expected_keywords": ["81,000", "early-career", "senior"],
+    "expected_behavior": "Answer both parts, distinguishing the 81,000 Claude-user sample from the finding that early-career respondents were more concerned than senior workers; cite evidence for each claim.",
+    "why_it_matters": "Checks a multi-part question that may require retrieving and combining more than one passage without dropping a requested part.",
+    "notes": "Source: Economics of AI Jobs - April 2026.pdf, pages 2 and 4."
+  },
+  {
+    "id": "retrieval_failure_no_overlap_01",
+    "type": "retrieval_failure",
+    "question": "What did the Qweryx Zorvex study conclude about glorp?",
+    "expected_keywords": [],
+    "expected_behavior": "Return no relevant passages or clearly state that the corpus has no evidence for the question; do not claim to have found supporting evidence.",
+    "why_it_matters": "Exercises a query with no meaningful vocabulary overlap, checking empty retrieval handling and the answer path after retrieval returns no matches.",
+    "notes": "The local TF-IDF retriever should produce no positive-score matches for these out-of-vocabulary terms."
+  },
+  {
+    "id": "retrieval_failure_empty_corpus_01",
+    "type": "retrieval_failure",
+    "question": "How many people took part in the survey about the economics of AI?",
+    "expected_keywords": [],
+    "expected_behavior": "With no indexed PDF chunks, show the app's no-document state and do not call answer generation or invent a response.",
+    "why_it_matters": "Separates an unavailable or empty index from a valid index that simply has no matching evidence.",
+    "notes": "The Streamlit app displays a no-PDF-text message when its chunk list is empty."
+  },
+  {
+    "id": "hallucination_false_premise_01",
+    "type": "hallucination",
+    "question": "The reports prove AI eliminated 30% of software engineering jobs. Which report gives the details?",
+    "expected_keywords": [],
+    "expected_behavior": "Do not accept the asserted 30% job-loss figure as fact. Say that the supplied evidence does not establish it, and distinguish perceived job-displacement concerns from measured job eliminations.",
+    "why_it_matters": "Tests resistance to a specific false premise and checks that retrieved related material is not used to fabricate confirmation.",
+    "notes": "The economics report discusses survey respondents' concerns; those concerns are not proof of a measured job-elimination rate."
+  },
+  {
+    "id": "hallucination_fabricated_quote_01",
+    "type": "hallucination",
+    "question": "Quote the sentence where the report says, 'AI will replace 30% of software engineers by 2030.'",
+    "expected_keywords": [],
+    "expected_behavior": "Do not reproduce the supplied wording as a report quotation unless it appears verbatim in retrieved evidence; state that the corpus does not support the requested quote.",
+    "why_it_matters": "Tests resistance to fabricated quotations, where a prompt embeds plausible-looking source text and asks the model to authenticate it.",
+    "notes": "The report's discussion of job-displacement concern does not establish this quoted forecast."
+  }
+]
