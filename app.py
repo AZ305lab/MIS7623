@@ -11,7 +11,6 @@ from pypdf import PdfReader
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-
 ROOT = Path(__file__).parent
 DEFAULT_CHUNK_TOKENS = 800
 DEFAULT_OVERLAP_TOKENS = 120
@@ -168,7 +167,7 @@ def answer_question(question: str, retrieved_chunks: list[tuple[Chunk, float]]) 
                         return extracted_answer
                 return "The retrieved passages do not provide a direct answer to that question."
             return limit_to_one_sentence(model_answer) or "I could not generate an answer from the available evidence."
-        except Exception as error:
+        except Exception:  # noqa: BLE001 - fall back when the optional model call fails
             st.warning("The language model was unavailable; showing a grounded fallback response.")
 
     if not retrieved_chunks:

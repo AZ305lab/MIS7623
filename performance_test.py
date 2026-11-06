@@ -17,7 +17,7 @@ for i, question in enumerate(questions, start=1):
         ok = bool(str(answer).strip())
         if not ok:
             failures += 1
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - report each failed test question
         failures += 1
         print(f"Q{i} ERROR: {exc}")
     elapsed = time.perf_counter() - start

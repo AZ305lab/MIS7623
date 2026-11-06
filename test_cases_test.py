@@ -3,7 +3,6 @@ from pathlib import Path
 
 import pytest
 
-
 CASES = json.loads(
     Path(__file__).with_name("test_cases.json").read_text(encoding="utf-8")
 )

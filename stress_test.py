@@ -14,7 +14,7 @@ def one_request(question):
     try:
         answer = ask_chatbot(question)
         return True, time.perf_counter() - start, str(answer)[:80]
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - report each failed request
         return False, time.perf_counter() - start, repr(exc)
 
 
